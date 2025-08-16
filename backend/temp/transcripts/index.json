@@ -1,0 +1,32 @@
+{
+  "jTHo90l4EMI_English": {
+    "video_id": "jTHo90l4EMI",
+    "language": "English",
+    "file_path": "/Users/fran/Computer-Science/Projects/yt-thai-learner/backend/temp/transcripts/2025-08-15/jTHo90l4EMI_English.json",
+    "date": "2025-08-15",
+    "saved_at": "2025-08-15T16:33:53.429341",
+    "metadata": {
+      "video_id": "jTHo90l4EMI",
+      "language": "English",
+      "language_code": "en",
+      "is_generated": false,
+      "is_translatable": true,
+      "from_cache": false
+    }
+  },
+  "jTHo90l4EMI_Thai": {
+    "video_id": "jTHo90l4EMI",
+    "language": "Thai",
+    "file_path": "/Users/fran/Computer-Science/Projects/yt-thai-learner/backend/temp/transcripts/2025-08-15/jTHo90l4EMI_Thai.json",
+    "date": "2025-08-15",
+    "saved_at": "2025-08-15T16:34:03.125294",
+    "metadata": {
+      "video_id": "jTHo90l4EMI",
+      "language": "Thai",
+      "language_code": "th",
+      "is_generated": false,
+      "is_translatable": true,
+      "from_cache": false
+    }
+  }
+}

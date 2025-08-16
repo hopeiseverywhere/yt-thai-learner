@@ -1,10 +1,9 @@
-import csv
 
 from pythainlp.tokenize import word_tokenize
 from pythainlp.transliterate import romanize
 from pythainlp.transliterate import transliterate
 
-from utils.dict_helpers import load_dictionary, index_by_thai, \
+from utils.dict_util import load_dictionary, index_by_thai, \
     search_headwords_only
 
 entries = load_dictionary("data/thai-eng-telex.csv")

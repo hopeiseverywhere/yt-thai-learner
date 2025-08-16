@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes import captions
-from pythainlp.transliterate import transliterate
-app = FastAPI(title="YouTube Subtitles Downloader", version="1.0.0")
+from config.settings import settings
+import uvicorn
+
+app = FastAPI(title=settings.api_title, version=settings.api_version)
 
 # --- CORS (adjust origins as needed) ---
 app.add_middleware(
@@ -32,3 +34,10 @@ async def health():
 
 
 # --- Run with: uvicorn main:app --reload ---
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=settings.api_port,
+        reload=True
+    )

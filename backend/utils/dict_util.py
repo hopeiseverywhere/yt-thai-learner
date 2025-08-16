@@ -12,7 +12,7 @@ _WS_RE = re.compile(r"\s+")
 
 
 def load_dictionary(path: str) -> List[DictionaryEntry]:
-    """Load the whole CSV into a list of DictionaryEntry objects."""
+    """Load the whole CSV into a list of DictionaryEntry objects"""
     entries: List[DictionaryEntry] = []
     with open(path, newline="", encoding="utf-8-sig") as f:  # Handle BOM
         reader = csv.DictReader(f)
@@ -54,7 +54,7 @@ def normalize_search_term(term: str) -> str:
 
 def index_by_thai(entries: List[DictionaryEntry]) -> Dict[
     str, List[DictionaryEntry]]:
-    """Build an index of Thai headwords for faster lookup."""
+    """Build an index of Thai headwords for faster lookup"""
     buckets = defaultdict(dict)  # key -> {id: entry}
 
     for entry in entries:
@@ -74,12 +74,12 @@ def search_dictionary(
     search_fields: Optional[Set[str]] = None
 ) -> SearchResult:
     """
-    Search for dictionary entries with exact matches only.
+    Search for dictionary entries with exact matches only
 
     Args:
         entries: List of DictionaryEntry objects to search
         search_term: The word/phrase to search for (exact match)
-        search_fields: Set of field names to search in. If None, searches main fields.
+        search_fields: Set of field names to search in. If None, searches main fields
 
     Returns:
         SearchResult containing all exactly matching entries
@@ -139,7 +139,7 @@ def _entry_matches_exact(
     return False
 
 
-# Predefined search field sets for convenience
+# Predefined search field sets
 _HEADWORD_FIELDS = {'t_entry', 't_search'}
 _ENGLISH_FIELDS = {'e_entry', 'e_related'}
 _THAI_FIELDS = {'t_search', 't_entry', 't_syn'}
@@ -148,27 +148,34 @@ _SYNONYM_FIELDS = {'t_syn', 'e_related'}
 
 def search_headwords_only(entries: List[DictionaryEntry],
     headword: str) -> SearchResult:
-    """Search for exact matches in headword fields only. Excludes synonyms."""
+    """
+    Search for exact matches in headword fields only
+    Excludes synonyms
+    """
     return search_dictionary(entries, headword, _HEADWORD_FIELDS)
 
 
 def search_by_english(entries: List[DictionaryEntry],
     english_term: str) -> SearchResult:
-    """Search for exact matches in English terms only."""
+    """
+    Search for exact matches in English terms only
+    """
     return search_dictionary(entries, english_term, _ENGLISH_FIELDS)
 
 
 def search_by_thai(entries: List[DictionaryEntry],
     thai_term: str) -> SearchResult:
-    """Search for exact matches in Thai terms only."""
+    """
+    Search for exact matches in Thai terms only
+    """
     return search_dictionary(entries, thai_term, _THAI_FIELDS)
 
 
 def search_with_priority(entries: List[DictionaryEntry],
     search_term: str) -> SearchResult:
     """
-    Search with priority: headwords first, then synonyms/related terms.
-    Returns results sorted by priority (headword matches first).
+    Search with priority: headwords first, then synonyms/related terms
+    Returns results sorted by priority (headword matches first)
     """
     if not search_term or not entries:
         return SearchResult(word=search_term, entries=[])
@@ -196,7 +203,7 @@ def search_with_priority(entries: List[DictionaryEntry],
 # Convenience function - most users probably want headwords only for the "ติดตาม" use case
 def search(entries: List[DictionaryEntry], term: str) -> SearchResult:
     """
-    Default search function - searches headwords only for cleaner results.
-    Use search_dictionary() for more control over search fields.
+    Default search function - searches headwords only for cleaner results
+    Use search_dictionary() for more control over search fields
     """
     return search_headwords_only(entries, term)

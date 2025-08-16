@@ -71,7 +71,7 @@ class TranscriptService:
         lang: Optional[str] = None, 
         translate_to: Optional[str] = None
     ) -> Tuple[List[dict], dict]:
-        """Fetch transcript data with optional language preference and translation."""
+        """Fetch transcript data with optional language preference and translation"""
         try:
             ytt_api = TranscriptService._get_api_instance()
 
