@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     api_port: int = 8000
     debug: bool = False
 
+    # Dictionary Configuration
+    dict_file_freq: str = "./data/thai-freq-matches.csv"
+    dict_file_full: str = "./data/thai-smart-matches.csv"
+
     @field_validator('transcript_temp_dir')
     def validate_temp_dir(cls, v):
         # Ensure path is absolute for consistency

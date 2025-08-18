@@ -8,12 +8,12 @@ from config.languages import AllowedLanguageNames, AllowedLanguageCodes
 from utils.ytb_util import (
     parse_video_id, transcript_to_srt, transcript_to_vtt,
 )
-from utils.local_files_util import (save_transcript_to_file, cleanup_old_files,
-                                    load_transcript_from_file, get_cache_stats,
-                                    find_transcript_by_video_id, load_index,
-                                    cleanup_index,
-                                    find_all_transcripts_with_content,
-                                    find_transcript_with_content)
+from utils.local_transcript_util import (save_transcript_to_file, cleanup_old_files,
+                                         load_transcript_from_file, get_cache_stats,
+                                         find_transcript_by_video_id, load_index,
+                                         cleanup_index,
+                                         find_all_transcripts_with_content,
+                                         find_transcript_with_content)
 from services.transcript_service import TranscriptService
 from config.settings import settings
 
@@ -62,7 +62,7 @@ async def search_cached_transcripts(
     include_content: bool = Query(True,
                                   description="Include actual transcript content in response")
 ):
-    """Search for cached transcripts by video ID with full content."""
+    """Search for cached transcripts by video ID with full content"""
 
     if include_content:
         if lang:

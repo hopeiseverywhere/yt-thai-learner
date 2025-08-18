@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import captions
+from api.routes import captions,learn
 from config.settings import settings
 import uvicorn
+
+from services.dictionary_service import dict_service
 
 app = FastAPI(title=settings.api_title, version=settings.api_version)
 
@@ -17,6 +19,11 @@ app.add_middleware(
 
 # Include routers
 app.include_router(captions.router, prefix="/captions", tags=["captions"])
+app.include_router(learn.router, prefix="/learn", tags=["learn"])
+
+@app.on_event("startup")
+async def startup_event():
+    dict_service.load_dictionary_from_file()
 
 
 @app.get("/")

@@ -4,20 +4,33 @@ import csv
 import unicodedata
 import re
 
-from models.dict_schemas import DictionaryEntry, SearchResult
+from models.dict_schemas import DictionaryEntry, SearchResult, TokenizedThaiWord
+from pythainlp.transliterate import transliterate
 
 # Remove zero-width & odd spaces
 _ZW_RE = re.compile(r"[\u200B\u200C\u200D\u2060\uFEFF]")
 _WS_RE = re.compile(r"\s+")
 
+# Predefined search field sets
+_HEADWORD_FIELDS = {'t_word'}
+_ENGLISH_FIELDS = {'e_dict', 'e_dict_v', 'e_related'}
+_THAI_FIELDS = {'t_word', 't_syn', 't_ant'}
+_SYNONYM_FIELDS = {'t_syn', 'e_related'}
+_ROMANIZATION_FIELDS = {'romanization'}
 
-def load_dictionary(path: str) -> List[DictionaryEntry]:
+
+def load_dictionary_from_file(path: str, csv_type: str = "auto") -> List[DictionaryEntry]:
     """Load the whole CSV into a list of DictionaryEntry objects"""
     entries: List[DictionaryEntry] = []
     with open(path, newline="", encoding="utf-8-sig") as f:  # Handle BOM
         reader = csv.DictReader(f)
         for row in reader:
-            entries.append(DictionaryEntry.from_row(row))
+            if csv_type == "freq":
+                entries.append(DictionaryEntry.from_frequency_csv_row(row))
+            elif csv_type == "full":
+                entries.append(DictionaryEntry.from_full_csv_row(row))
+            else:  # auto-detect
+                entries.append(DictionaryEntry.from_row(row))
     return entries
 
 
@@ -52,20 +65,17 @@ def normalize_search_term(term: str) -> str:
     return normalized.lower() if normalized else ""
 
 
-def index_by_thai(entries: List[DictionaryEntry]) -> Dict[
-    str, List[DictionaryEntry]]:
+def index_by_thai(entries: List[DictionaryEntry]) -> Dict[str, List[DictionaryEntry]]:
     """Build an index of Thai headwords for faster lookup"""
     buckets = defaultdict(dict)  # key -> {id: entry}
 
     for entry in entries:
-        for key in (
-            normalize_text(entry.t_entry), normalize_text(entry.t_search)):
-            if key:
-                buckets[key][
-                    entry.id] = entry  # Overwrites duplicates of same id
+        # Index by main Thai word field
+        normalized_word = normalize_text(entry.t_word)
+        if normalized_word:
+            buckets[normalized_word][entry.id] = entry  # Overwrites duplicates of same id
 
-    return {key: list(entries_dict.values()) for key, entries_dict in
-            buckets.items()}
+    return {key: list(entries_dict.values()) for key, entries_dict in buckets.items()}
 
 
 def search_dictionary(
@@ -93,9 +103,9 @@ def search_dictionary(
     # Default search fields (most commonly searched)
     if search_fields is None:
         search_fields = {
-            't_search',  # Thai search term
-            't_entry',  # Thai headword
-            'e_entry',  # English headword
+            't_word',  # Thai word (main field)
+            'e_dict',  # English dictionary meaning
+            'freq_english',  # Frequency list English
             't_syn',  # Thai synonyms
             'e_related'  # English related terms
         }
@@ -119,6 +129,7 @@ def _entry_matches_exact(
 ) -> bool:
     """Check if a dictionary entry exactly matches the search term."""
     for field_name in search_fields:
+
         field_value = getattr(entry, field_name, None)
 
         if not field_value:
@@ -137,13 +148,6 @@ def _entry_matches_exact(
                 return True
 
     return False
-
-
-# Predefined search field sets
-_HEADWORD_FIELDS = {'t_entry', 't_search'}
-_ENGLISH_FIELDS = {'e_entry', 'e_related'}
-_THAI_FIELDS = {'t_search', 't_entry', 't_syn'}
-_SYNONYM_FIELDS = {'t_syn', 'e_related'}
 
 
 def search_headwords_only(entries: List[DictionaryEntry],
